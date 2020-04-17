@@ -1,0 +1,13 @@
+스프링 프레임워크?
+dependency injection, transaction management 
+종속성 주입 , 트랜잭션 관리
+2가지 기능을 도와준다.
+java EE(유료화) -> Spring(무료)
+
+java se 위에 java EE 나 Spring을 얹는다.
+
+MVC     트랜잭션    인증과 권한
+(DI)         (AOP)    (Servlet Filter)
+
+
+
