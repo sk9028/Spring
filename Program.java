@@ -34,7 +34,8 @@ public class Program {
 		ApplicationContext context = 
 				new ClassPathXmlApplicationContext("spring/di/setting.xml");
 			
-		
+		Exam exam = context.getBean(Exam.class);
+		System.out.println(exam.toString());
 		ExamConsole console = (ExamConsole) context.getBean("console"); //캐스팅이 필요함. console만 쓰면 어떤 녀석인지 잘 모르기 때문
 		//ExamConsole console = context.getBean(ExamConsole.class); //위에꺼 또는 이 방식 2가지가 있음. 하지만 위에보단 아래께 더 보편적
 		console.print();
