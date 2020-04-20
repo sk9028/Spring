@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!-- Exam exam = new NewlecExam();-->
+	<!-- class이름은 패키지명까지 꼭 입력해줘야함.  -->
+	<!-- property 설정에는 value와 ref가 있는데 값 설정은 value호출은 ref를 사용하자. -->
+	<bean id = "exam" class = "spring.di.entity.NewlecExam">
+		<property name="kor">
+			<value>10</value>  <!-- 이런식으로도 값 설정가능 -->
+		</property>
+		<property name="eng" value="20"/>
+		<property name="math" value="30"/>
+		<property name="com" value="40"/>
+	</bean>
+	
+	<!-- ExamConsole console = new GridExamConsole(); -->
+	<!-- 원래 property의 name은 setExam이지만 사용할 때는 앞에 set을 빼주고 대문자는 소문자로 변환해주는 작업이 필요하다. -->
+	<bean id = "console" class = "spring.di.ui.InlineExamConsole">
+		<!-- console.setExam(exam);   setExam == exam -->
+		<property name="exam" ref="exam"/> 
+	</bean>
+	
+	
+</beans>
