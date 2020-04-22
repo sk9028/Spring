@@ -1,4 +1,4 @@
-package spring.di.entity;
+package spring.aop.entity;
 
 public interface Exam {
 

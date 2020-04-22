@@ -1,44 +1,60 @@
-package spring.di;
+package spring.aop;
 
-import java.applet.Applet;
-import java.applet.AppletContext;
-import java.applet.AudioClip;
-import java.awt.Image;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import spring.di.entity.Exam;
-import spring.di.entity.NewlecExam;
-import spring.di.ui.ExamConsole;
-import spring.di.ui.GridExamConsole;
-import spring.di.ui.InlineExamConsole;
+import spring.aop.entity.Exam;
+import spring.aop.entity.NewlecExam;
+import spring.di.NewlecDIConfig;
+
 
 public class Program {
 
 	public static void main(String[] args) {
-	
-		/* 스프링에게 지시하는 방법으로 코드를 변경
-		Exam exam = new NewlecExam();
-		//ExamConsole console = new InlineExamConsole(exam); //DI
-		ExamConsole console = new GridExamConsole();
-		console.setExam(exam);
-		*/
-		//부품을 생성해서 조립하고 던져주는 녀석이 스프링.
 		
 		ApplicationContext context = 
-				new ClassPathXmlApplicationContext("spring/di/setting.xml");
-			
-		Exam exam = context.getBean(Exam.class);
-		System.out.println(exam.toString());
-		ExamConsole console = (ExamConsole) context.getBean("console"); //캐스팅이 필요함. console만 쓰면 어떤 녀석인지 잘 모르기 때문
-		//ExamConsole console = context.getBean(ExamConsole.class); //위에꺼 또는 이 방식 2가지가 있음. 하지만 위에보단 아래께 더 보편적
-		console.print();
+				//new AnnotationConfigApplicationContext(NewlecDIConfig.class); //어노테이션 사용
+				new ClassPathXmlApplicationContext("spring/aop/setting.xml"); 
+		
+		Exam exam = (Exam) context.getBean("proxy");
+		
+		System.out.printf("total is %d\n",exam.total());
+		System.out.printf("avg is %f\n",exam.avg());
+	
+		
+		
+		
+		
+		/*
+		 * Exam exam = new NewlecExam(1,1,1,1);
+		 * 
+		 * 
+		 * //곁다리 업무 사용방법 Exam proxy = (Exam)
+		 * Proxy.newProxyInstance(NewlecExam.class.getClassLoader(), new Class[]
+		 * {Exam.class}, new InvocationHandler() {
+		 * 
+		 * @Override public Object invoke(Object proxy, Method method, Object[] args)
+		 * throws Throwable {
+		 * 
+		 * long start = System.currentTimeMillis();
+		 * 
+		 * Object result = method.invoke(exam, args);
+		 * 
+		 * long end = System.currentTimeMillis();
+		 * 
+		 * String message = (end - start) + "ms 시간이 걸렸습니다"; System.out.println(message);
+		 * 
+		 * 
+		 * return result; } } );
+		 */
+		
+		
+		
 	}
 
 }

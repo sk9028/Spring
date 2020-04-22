@@ -2,12 +2,63 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:p="http://www.springframework.org/schema/p"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-	<!-- Exam exam = new NewlecExam();-->
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+		
+	<!-- <context:component-scan base-package="spring.di.ui,spring.di.entity"/> -->	
+	<!-- <context:annotation-config/> -->
+	<!-- Exam exam = new NewlecExam(); -->
 	<!-- class이름은 패키지명까지 꼭 입력해줘야함.  -->
 	<!-- property 설정에는 value와 ref가 있는데 값 설정은 value호출은 ref를 사용하자. -->
-	<bean id = "exam" class = "spring.di.entity.NewlecExam" p:kor="10" p:eng="10" p:math="10" p:com="10"/>
-	
+	<!-- <bean id = "exam" class = "spring.di.entity.NewlecExam" p:kor="1" p:eng="1"> -->
+	 <bean id = "target" class = "spring.aop.entity.NewlecExam" p:kor="1" p:eng="1" p:math="1" p:com="1"/>
+	 <bean id = "logAroundAdvice" class="spring.aop.advice.LogAroundAdvice"/> <!-- 핸들러 클래스를 빈에 추가 -->
+	 <bean id = "logBeforeAdvice" class="spring.aop.advice.logBeforeAdvice"/>
+	 <bean id = "logAfterReturningAdvice" class="spring.aop.advice.logAfterReturningAdvice"/>
+	 <bean id = "logAfterThrowingAdvice" class="spring.aop.advice.logAfterThrowingAdvice"/>
+	 
+	 <!-- <bean id="classicPointCut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+	 	<property name="mappedName" value="total"/> 스펠링에 유의할 것
+	 </bean> -->
+	 
+	 <!-- <bean id="classicBeforeAdvisor" class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+	 	<property name="advice" ref="logBeforeAdvice"></property>
+	 	<property name="mappedNames">
+	 		<list>
+	 			<value>total</value>
+	 			<value>avg</value>
+	 		</list>
+	 	</property>
+	 </bean> -->
+	  
+	  <bean id="classicBeforeAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+	 	<property name="advice" ref="logBeforeAdvice"></property>
+	 	<!--<property name="mappedNames">  s를 붙이면 리스트 형태로 여러개 메서드를 사용할 수 있다. -->
+	 	<property name="patterns"> <!-- 아래 밸류값을 패턴으로 줄 때 사용 -->
+	 		<list>
+	 			<value>.*to.*</value> <!-- to가 들어간 메서드를 찾아라 -->
+	 			<value>avg</value>
+	 		</list>
+	 	</property>
+	 </bean>
+	  
+	  
+	 <bean id="exam" class="org.springframework.aop.framework.ProxyFactoryBean">
+	 	<property name="target" ref="target"/> <!-- NewlecExam 생성 -> NewlecExam.class.getClassLoader() -->
+	 	<property name="interceptorNames"> <!-- invoke 핸들러 생성과 같음 -->
+	 		<list>
+	 			<value>logAroundAdvice</value> <!-- 위에 logAroundAdvice빈 사용한다는 뜻 -->
+	 			<value>classicBeforeAdvisor</value>
+	 			<value>logAfterReturningAdvice</value>
+	 			<value>logAfterThrowingAdvice</value>
+	 		</list>
+	 	</property>
+	 </bean>
 	<!-- 생성자와 인덱스 번호를 이용한 arg 값 설정 
 		<constructor-arg index = "0" value = "10"/>
 		<constructor-arg index = "1" value = "20"/>
@@ -21,15 +72,27 @@
 	<constructor-arg name="com" value = "40"/>
 	-->
 	
+	<!-- <util:list id = "exams" list-class="java.util.ArrayList">
+				<bean class = "spring.di.entity.NewlecExam" p:kor="1" p:eng="1"/>
+				<ref bean="exam"/>
+	</util:list> -->
 	
 	
+	<!-- <bean id = "exams" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<bean class = "spring.di.entity.NewlecExam" p:kor="1" p:eng="1"/>
+				<ref bean="exam"/>
+			</list>
+		</constructor-arg>
+	</bean> -->
 	
 	<!-- ExamConsole console = new GridExamConsole(); -->
 	<!-- 원래 property의 name은 setExam이지만 사용할 때는 앞에 set을 빼주고 대문자는 소문자로 변환해주는 작업이 필요하다. -->
-	<bean id = "console" class = "spring.di.ui.InlineExamConsole">
-		<!-- console.setExam(exam);   setExam == exam -->
+	<!-- <bean id = "console" class = "spring.di.ui.InlineExamConsole">
+		console.setExam(exam);   setExam == exam
 		<property name="exam" ref="exam"/> 
-	</bean>
+	</bean> -->
 	
 	
 </beans>
